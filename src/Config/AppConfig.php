@@ -21,7 +21,6 @@ final class AppConfig
             'http://0.0.0.0:8000',
             'https://localhost',
             'https://127.0.0.1',
-            'https://*.github.io',
         ];
 
         $envOrigins = getenv('PILOT_ALLOWED_ORIGINS');
@@ -49,5 +48,30 @@ final class AppConfig
         }
 
         return array_values(array_unique(array_filter($allowed, static fn (string $origin): bool => $origin !== '')));
+    }
+
+    public static function isAllowedOrigin(string $origin): bool
+    {
+        if ($origin === '') {
+            return false;
+        }
+
+        foreach (self::allowedOrigins() as $allowedOrigin) {
+            if ($allowedOrigin === '*') {
+                return true;
+            }
+
+            if ($allowedOrigin === $origin) {
+                return true;
+            }
+
+            $pattern = str_replace('\*', '.*', preg_quote($allowedOrigin, '/'));
+            if (@preg_match('/^' . $pattern . '$/i', $origin) === 1) {
+                return true;
+            }
+        }
+
+        $host = parse_url($origin, PHP_URL_HOST);
+        return is_string($host) && preg_match('/\.github\.io$/i', $host) === 1;
     }
 }

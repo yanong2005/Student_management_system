@@ -14,7 +14,10 @@ final class Kernel
         try {
             $pdo = PdoFactory::make();
         } catch (Throwable $error) {
-            JsonResponder::send(503, ['error' => 'Database connection failed. Check MySQL and the PILOT_DB_* settings.']);
+            JsonResponder::send(503, [
+                'error' => 'Database connection failed. Check the InfinityFree MySQL host, database name, username, password, and schema import.',
+                'detail' => $error->getMessage(),
+            ]);
         }
         $controller = new WorkspaceController(new WorkspaceService(new WorkspaceStore($pdo)));
         $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';

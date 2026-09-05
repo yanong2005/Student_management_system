@@ -13,12 +13,8 @@ final class Cors
 
         $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
         if ($origin !== '') {
-            $allowedOrigins = AppConfig::allowedOrigins();
-            foreach ($allowedOrigins as $allowedOrigin) {
-                if ($allowedOrigin === '*' || $allowedOrigin === $origin) {
-                    header("Access-Control-Allow-Origin: $allowedOrigin");
-                    break;
-                }
+            if (AppConfig::isAllowedOrigin($origin)) {
+                header("Access-Control-Allow-Origin: $origin");
             }
         }
     }
