@@ -1,0 +1,22 @@
+# Local configuration and secrets
+.env
+.env.*
+!.env.example
+
+# PHP dependencies and runtime files
+/vendor/
+*.log
+
+# Node/Vite dependencies and build output
+node_modules/
+dist/
+
+# IDE and operating-system files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Local database exports and temporary files
+*.sql.gz
+*.dump

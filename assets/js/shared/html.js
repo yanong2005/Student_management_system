@@ -1,0 +1,3 @@
+export const esc = value => String(value ?? "").replace(/[&<>"']/g, char => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" }[char]));
+export const initials = name => name.split(" ").map(part => part[0]).slice(0, 2).join("").toUpperCase();
+export const studentDisplayName = student => student.name || [student.firstName, student.middleName, student.lastName, student.extension].filter(Boolean).join(" ");
