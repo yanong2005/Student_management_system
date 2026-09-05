@@ -1,11 +1,7 @@
 -- ------------------------------------------------------------
 -- Create Database
 -- ------------------------------------------------------------
-CREATE DATABASE IF NOT EXISTS if0_42839891_student_monitoring
-    CHARACTER SET utf8mb4
-    COLLATE utf8mb4_unicode_ci;
 
-USE if0_42839891_student_monitoring;
 
 -- ------------------------------------------------------------
 -- 1. Users (authentication & roles)
