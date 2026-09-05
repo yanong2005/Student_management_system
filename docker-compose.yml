@@ -1,0 +1,40 @@
+version: "3.9"
+
+services:
+  app:
+    build:
+      context: .
+    container_name: pilot-app
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    environment:
+      APP_ENV: production
+      PILOT_DB_HOST: db
+      PILOT_DB_PORT: 3306
+      PILOT_DB_NAME: student_monitoring
+      PILOT_DB_USER: appuser
+      PILOT_DB_PASSWORD: apppass
+      PILOT_ALLOWED_ORIGINS: http://localhost:8000,http://127.0.0.1:8000
+    depends_on:
+      - db
+    command: php -S 0.0.0.0:8000 -t .
+
+  db:
+    image: mysql:8.0
+    container_name: pilot-db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: student_monitoring
+      MYSQL_USER: appuser
+      MYSQL_PASSWORD: apppass
+      MYSQL_ROOT_PASSWORD: rootpass
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./xampp-schema.sql:/docker-entrypoint-initdb.d/01_schema.sql:ro
+      - mysql-data:/var/lib/mysql
+
+volumes:
+  mysql-data:

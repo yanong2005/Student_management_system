@@ -1,0 +1,37 @@
+services:
+  - type: web
+    name: pilot-student-monitoring
+    runtime: php
+    plan: free
+    buildCommand: "php -v"
+    startCommand: "php -S 0.0.0.0:$PORT -t ."
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: PILOT_ALLOWED_ORIGINS
+        value: https://pilot-student-monitoring.onrender.com
+      - key: PILOT_DB_HOST
+        fromDatabase:
+          name: pilot-student-monitoring-db
+          property: host
+      - key: PILOT_DB_PORT
+        fromDatabase:
+          name: pilot-student-monitoring-db
+          property: port
+      - key: PILOT_DB_NAME
+        fromDatabase:
+          name: pilot-student-monitoring-db
+          property: database
+      - key: PILOT_DB_USER
+        fromDatabase:
+          name: pilot-student-monitoring-db
+          property: user
+      - key: PILOT_DB_PASSWORD
+        fromDatabase:
+          name: pilot-student-monitoring-db
+          property: password
+
+databases:
+  - name: pilot-student-monitoring-db
+    databaseName: student_monitoring
+    user: pilotuser
