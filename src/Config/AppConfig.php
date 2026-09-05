@@ -19,6 +19,9 @@ final class AppConfig
             'http://localhost:8000',
             'http://127.0.0.1:8000',
             'http://0.0.0.0:8000',
+            'https://localhost',
+            'https://127.0.0.1',
+            'https://*.github.io',
         ];
 
         $envOrigins = getenv('PILOT_ALLOWED_ORIGINS');
@@ -35,6 +38,14 @@ final class AppConfig
         if ($host !== '') {
             $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
             $allowed[] = $scheme . '://' . $host;
+        }
+
+        $githubPagesHost = $_SERVER['HTTP_REFERER'] ?? '';
+        if ($githubPagesHost !== '') {
+            $parsed = parse_url($githubPagesHost, PHP_URL_HOST);
+            if (is_string($parsed) && $parsed !== '') {
+                $allowed[] = 'https://' . $parsed;
+            }
         }
 
         return array_values(array_unique(array_filter($allowed, static fn (string $origin): bool => $origin !== '')));

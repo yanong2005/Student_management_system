@@ -24,7 +24,7 @@ export const getApiBaseUrl = () => {
         return "api.php";
     }
 
-    return "api.php";
+    return "https://your-live-domain.example.com/api.php";
 };
 
 export const DATABASE_API = getApiBaseUrl();
