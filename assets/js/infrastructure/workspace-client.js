@@ -11,7 +11,7 @@ const parseJsonResponse = async response => {
         return JSON.parse(text);
     } catch (error) {
         console.error("Failed to parse server response:", error, text);
-        throw new Error("The server returned an invalid response. The PHP API may be unavailable or the database connection may be broken.");
+        throw new Error("The backend returned invalid data. Start XAMPP MySQL, import xampp-schema.sql, and make sure the PHP server is running on http://127.0.0.1:8000.");
     }
 };
 
