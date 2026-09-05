@@ -1,10 +1,25 @@
 import { DATABASE_API, DATABASE_STATE_ID } from "../shared/constants.js";
 let databaseVersion = 0;
+
+const parseJsonResponse = async response => {
+    const text = await response.text();
+    if (!text) {
+        return {};
+    }
+
+    try {
+        return JSON.parse(text);
+    } catch (error) {
+        console.error("Failed to parse server response:", error, text);
+        throw new Error("The server returned an invalid response. The PHP API may be unavailable or the database connection may be broken.");
+    }
+};
+
 export const loadRemoteState = async fallback => {
     try {
         const response = await fetch(`${DATABASE_API}?id=${DATABASE_STATE_ID}`);
         if (!response.ok) return fallback;
-        const payload = await response.json();
+        const payload = await parseJsonResponse(response);
         databaseVersion = Number(payload.version) || 0;
         return payload.state || fallback;
     } catch (error) {
@@ -18,7 +33,7 @@ export const refreshRemoteState = async fallback => {
             cache: "no-store"
         });
         if (!response.ok) return fallback;
-        const payload = await response.json();
+        const payload = await parseJsonResponse(response);
         databaseVersion = Number(payload.version) || 0;
         return payload.state || fallback;
     } catch (error) {
@@ -33,8 +48,6 @@ export const saveRemoteState = async state => {
             state: state,
             expected_version: databaseVersion
         });
-        console.log("Saving state with version:", databaseVersion);
-        console.log("State keys:", Object.keys(state));
         const response = await fetch(DATABASE_API, {
             method: "PUT",
             headers: {
@@ -43,21 +56,17 @@ export const saveRemoteState = async state => {
             },
             body: requestBody
         });
-        console.log("Response status:", response.status);
+
         let payload = {};
         try {
-            const text = await response.text();
-            console.log("Response text:", text);
-            if (text) {
-                payload = JSON.parse(text);
-            }
-        } catch (e) {
-            console.error("Failed to parse response:", e);
+            payload = await parseJsonResponse(response);
+        } catch (error) {
             return {
                 ok: false,
-                error: "Invalid response from server. Please check your database connection."
+                error: error.message || "Invalid response from server. Please check your database connection."
             };
         }
+
         if (response.ok) {
             databaseVersion = Number(payload.version) || databaseVersion + 1;
             return { ok: true, version: databaseVersion };
@@ -77,13 +86,13 @@ export const saveRemoteState = async state => {
         }
         return {
             ok: false,
-            error: payload.error || `Server error (${response.status})`
+            error: payload.error || `The server did not accept the request (${response.status}). Check your PHP API and database settings.`
         };
     } catch (error) {
         console.error("Save error:", error);
         return {
             ok: false,
-            error: "Network error: " + error.message
+            error: "Network error: unable to reach the PHP API. Start the backend server or configure a live API URL."
         };
     }
 };

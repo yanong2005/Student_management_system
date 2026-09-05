@@ -9,11 +9,20 @@ const show = panelId => {
 };
 document.querySelectorAll("[data-auth]").forEach(button => button.addEventListener("click", () => show(button.dataset.auth)));
 
+const isStaticPreview = () => {
+    const hostname = window.location.hostname || "";
+    return hostname.includes("github.io") || hostname.includes("githubusercontent.com") || hostname.includes("raw.githubusercontent.com");
+};
+
 const authMessage = message => {
     const node = document.querySelector("#auth-message");
     node.textContent = message;
     node.classList.add("visible");
 };
+
+if (isStaticPreview()) {
+    authMessage("This GitHub preview is static-only. To register or sign in, deploy the PHP API and MySQL database to a live host and set a real API URL.");
+}
 
 const roleSelect = document.querySelector("#account-role");
 const studentFields = document.querySelector("#student-fields");

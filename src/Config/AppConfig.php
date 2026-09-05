@@ -13,6 +13,30 @@ final class AppConfig
     /** @return list<string> */
     public static function allowedOrigins(): array
     {
-        return ['http://localhost:5500', 'http://127.0.0.1:5500'];
+        $allowed = [
+            'http://localhost:5500',
+            'http://127.0.0.1:5500',
+            'http://localhost:8000',
+            'http://127.0.0.1:8000',
+            'http://0.0.0.0:8000',
+        ];
+
+        $envOrigins = getenv('PILOT_ALLOWED_ORIGINS');
+        if (is_string($envOrigins) && $envOrigins !== '') {
+            foreach (explode(',', $envOrigins) as $origin) {
+                $origin = trim($origin);
+                if ($origin !== '') {
+                    $allowed[] = $origin;
+                }
+            }
+        }
+
+        $host = $_SERVER['HTTP_HOST'] ?? '';
+        if ($host !== '') {
+            $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+            $allowed[] = $scheme . '://' . $host;
+        }
+
+        return array_values(array_unique(array_filter($allowed, static fn (string $origin): bool => $origin !== '')));
     }
 }
