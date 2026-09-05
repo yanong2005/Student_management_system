@@ -16,6 +16,6 @@ if (-not $php) {
 
 $host = '127.0.0.1'
 $port = '8000'
-Write-Host "Starting PHP server on http://$host:$port" -ForegroundColor Green
+Write-Host "Starting PHP server on http://${host}:${port}" -ForegroundColor Green
 
-& php -S "$host:$port" -t .
+& php -S "${host}:${port}" -t .
